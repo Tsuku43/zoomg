@@ -140,17 +140,17 @@ class Zoomg {
 };
 
 /*
-const pybind11::array_t<int> &img_np := 入力画像
+const pybind11::array_t<int> &image := 入力画像
 const int h := 画像の高さ
 const int w := 画像のはば
 const int frame := 生成するフレーム数
 const double rate := 過疎率
 */
 
-void add_noise(const pybind11::array_t<int> &img_np, const int h, const int w,
+void add_noise(const pybind11::array_t<uint8_t> &image, const int h, const int w,
                const double rate) {
     // 画像をノイズ入り動画へ変換
-    int *img = (int *)img_np.request().ptr;
+    uint8_t *img = (uint8_t *)image.request().ptr;
     srand((unsigned)time(NULL));
 
     for (int k = 0; k < h * w * rate; ++k) {
@@ -175,6 +175,6 @@ PYBIND11_MODULE(zoomg, m) {
         .def("get_height", &Zoomg::get_height)
         .def("get_width", &Zoomg::get_width)
         .def("get_shape", &Zoomg::get_shape);
-    m.def("add_noise", &add_noise, pybind11::arg("img_np"), pybind11::arg("h"),
+    m.def("add_noise", &add_noise, pybind11::arg("image"), pybind11::arg("h"),
           pybind11::arg("w"), pybind11::arg("rate") = 0.0003);
 }
