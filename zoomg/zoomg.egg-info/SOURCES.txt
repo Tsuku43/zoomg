@@ -1,0 +1,11 @@
+LICENSE
+MANIFEST.in
+README.rst
+setup.py
+zoomg.cpp
+zoomg.egg-info/PKG-INFO
+zoomg.egg-info/SOURCES.txt
+zoomg.egg-info/dependency_links.txt
+zoomg.egg-info/not-zip-safe
+zoomg.egg-info/requires.txt
+zoomg.egg-info/top_level.txt
