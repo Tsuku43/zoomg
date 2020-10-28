@@ -7,21 +7,20 @@
 #include <tuple>
 #include <vector>
 
-using namespace std;
-using Pixel = vector<int>;
-using Image = vector<vector<Pixel>>;
-using Movie = vector<Image>;
+using Pixel = std::vector<uint8_t>;
+using Image = std::vector<std::vector<Pixel>>;
+using Movie = std::vector<Image>;
 
 class Zoomg {
    private:
     // 画素の値がキー，値を<個数, 出現タイミング>として出現頻度を管理
-    vector<vector<map<Pixel, pair<int, int>>>> freq;
+    std::vector<std::vector<std::map<Pixel, std::pair<int, int>>>> freq;
     // 生成する画像
     Image image;
     // 動画の高さと幅
     int height, width;
     // 出現頻度のソート用配列
-    vector<tuple<Pixel, int, int>> most_common;
+    std::vector<std::tuple<Pixel, int, int>> most_common;
     // 生成率
     int omgc;
     // 出現︎タイミングを保持する
@@ -44,13 +43,13 @@ class Zoomg {
    public:
     Zoomg(const int h, const int w) : height(h), width(w), omgc(0), order(0) {
         // 初期化
-        freq = vector<vector<map<Pixel, pair<int, int>>>>(
-            h, vector<map<Pixel, pair<int, int>>>(w));
-        image = Image(h, vector<Pixel>(w));
+        freq = std::vector<std::vector<std::map<Pixel, std::pair<int, int>>>>(
+            h, std::vector<std::map<Pixel, std::pair<int, int>>>(w));
+        image = Image(h, std::vector<Pixel>(w));
     }
-    void add_image(const pybind11::array_t<int> img_np) {
+    void add_image(const pybind11::array_t<uint8_t> img_np) {
         // 画像を登録
-        const int *img = (const int *)img_np.request().ptr;
+        const uint8_t *img = (const uint8_t *)img_np.request().ptr;
         for (int h = 0; h < height; ++h) {
             for (int w = 0; w < width; ++w) {
                 const Pixel p = Pixel(img + 3 * (h * width + w),
@@ -58,7 +57,7 @@ class Zoomg {
                 if (freq[h][w].find(p) != freq[h][w].end()) {
                     ++freq[h][w][p].first;
                 } else {
-                    freq[h][w][p] = make_pair(1, order++);
+                    freq[h][w][p] = {1, order++};
                 }
             }
         }
@@ -79,19 +78,19 @@ class Zoomg {
                 // 出現個数(昇順), 出現タイミング(降順)の順でソート
                 sort(most_common.begin(), most_common.end(),
                      [](auto const &lhs, auto const &rhs) {
-                         if (get<1>(lhs) == get<1>(rhs)) {
-                             return get<2>(lhs) > get<2>(rhs);
+                         if (std::get<1>(lhs) == std::get<1>(rhs)) {
+                             return std::get<2>(lhs) > std::get<2>(rhs);
                          } else {
-                             return get<1>(lhs) < get<1>(rhs);
+                             return std::get<1>(lhs) < std::get<1>(rhs);
                          }
                      });
-                const Pixel most = get<0>(*most_common.rbegin());
+                const Pixel most = std::get<0>(*most_common.rbegin());
                 [&]() -> void {
                     // コサイン類似度がparam未満で出現タイミングが最も早い画素を探索
                     for (auto p : most_common) {
-                        if (cos_sim(get<0>(p), most) < param) {
+                        if (cos_sim(std::get<0>(p), most) < param) {
                             ++omgc;
-                            image[h][w] = get<0>(p);
+                            image[h][w] = std::get<0>(p);
                             return;
                         }
                     }
@@ -117,13 +116,13 @@ class Zoomg {
         // 生成された画像を取得
         return width;
     }
-    pair<int, int> get_shape(void) const {
+    std::pair<int, int> get_shape(void) const {
         // 生成された画像を取得
         return {height, width};
     }
-    tuple<int, int, double> verify(const pybind11::array_t<int> &img_np) {
+    std::tuple<int, int, double> verify(const pybind11::array_t<int> &img_np) {
         // 生成した画像がどれくらい部屋を復元できているか検証
-        const int *verify_img = (const int *)img_np.request().ptr;
+        const uint8_t *verify_img = (const uint8_t *)img_np.request().ptr;
         int ok = 0, ng = 0;
         for (int h = 0; h < height; ++h) {
             for (int w = 0; w < width; ++w) {
@@ -155,8 +154,10 @@ void add_noise(const pybind11::array_t<int> &img_np, const int h, const int w,
     srand((unsigned)time(NULL));
 
     for (int k = 0; k < h * w * rate; ++k) {
+        int _h = rand() % h;
+        int _w = rand() % w;
         for (int p = 0; p < 3; ++p) {
-            img[3 * (rand() % h * w + rand() % w) + p] = rand() % 256;
+            img[3 * (_h * w + _w) + p] = rand() % 256;
         }
     }
 }
@@ -167,7 +168,7 @@ PYBIND11_MODULE(zoomg, m) {
              pybind11::arg("w"))
         .def("add_image", &Zoomg::add_image)
         .def("generate_image", &Zoomg::generate_image,
-             pybind11::arg("param") = 0.75,pybind11::arg("noise_frame") = 0)
+             pybind11::arg("param") = 0.75, pybind11::arg("noise_frame") = 0)
         .def("get_image", &Zoomg::get_image)
         .def("get_omgc", &Zoomg::get_omgc)
         .def("verify", &Zoomg::verify)
