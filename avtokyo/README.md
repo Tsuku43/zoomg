@@ -4,7 +4,7 @@
 
 ## 登壇資料
 * [ja] slide-AVTOKYO2020.pdf (日本語版)
-* [en] slide-AVTOKYO2020.pdf (英語版)
+* [en] slide-AVTOKYO2020.pdf (english ver.)
 
 ## CTFファイル
 * [ctf.mp4](https://github.com/Tsuku43/zoomg/avtokyo/ctf.mp4)
