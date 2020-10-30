@@ -3,7 +3,8 @@
 [AVTOKYO2020](https://www.avtokyo.org/2020)へのご参加ありがとうございます.
 
 ## 登壇資料
-* coming soon...
+* [ja] slide-AVTOKYO2020.pdf (日本語版)
+* [en] slide-AVTOKYO2020.pdf (英語版)
 
 ## CTFファイル
 * [ctf.mp4](https://github.com/Tsuku43/zoomg/avtokyo/ctf.mp4)
