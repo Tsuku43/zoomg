@@ -2,7 +2,7 @@
 
 # **zoomg**
 
-バーチャル背景適用済み動画から部屋の画像をを復元するライブラリ
+バーチャル背景適用済み動画から部屋の画像を復元するライブラリ
 
 ![icon](https://github.com/Tsuku43/zoomg/blob/master/images/icon.png?raw=true)
 
