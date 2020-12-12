@@ -1,4 +1,4 @@
-[![PyPI version](https://badge.fury.io/py/zoomg.svg)](https://badge.fury.io/py/zoomg) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![PyPI version](https://badge.fury.io/py/zoomg.svg)](https://badge.fury.io/py/zoomg) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![Downloads](https://pepy.tech/badge/zoomg)](https://pepy.tech/project/zoomg)
 
 # **zoomg**
 
