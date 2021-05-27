@@ -1,3 +1,17 @@
+/*
+# 本ソースコードのコンパイル
+> pwd
+ほにゃらら/zoomg/zoomg
+
+> clang++ -O3 -Wall -shared -std=c++17 -fPIC `python -m pybind11 --includes`
+-undefined dynamic_lookup zoomg.cpp -o zoomg`python3-config --extension-suffix`
+
+# 実行
+> cd test
+> pip uninstall zoomg # いらないかも
+> python test.py sample_02.mp4
+*/
+
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
@@ -62,7 +76,8 @@ class Zoomg {
             }
         }
     }
-    void generate_image(const double param, const int noise_frame) {
+    void generate_image(const double param, const int noise_frame,
+                        const std::string comp) {
         // 画像を生成
         for (int h = 0; h < height; ++h) {
             for (int w = 0; w < width; ++w) {
@@ -88,7 +103,15 @@ class Zoomg {
                 [&]() -> void {
                     // コサイン類似度がparam未満で出現タイミングが最も早い画素を探索
                     for (auto p : most_common) {
-                        if (cos_sim(std::get<0>(p), most) < param) {
+                        if (comp == "cos_sim") {
+                            if (cos_sim(std::get<0>(p), most) < param) {
+                                ++omgc;
+                                image[h][w] = std::get<0>(p);
+                                return;
+                            }
+                        } else if (comp == "ciede2000") {
+                            // TODO
+                            printf("FROM CIEDE\n");
                             ++omgc;
                             image[h][w] = std::get<0>(p);
                             return;
@@ -147,8 +170,8 @@ const int frame := 生成するフレーム数
 const double rate := 過疎率
 */
 
-void add_noise(const pybind11::array_t<uint8_t> &image, const int h, const int w,
-               const double rate) {
+void add_noise(const pybind11::array_t<uint8_t> &image, const int h,
+               const int w, const double rate) {
     // 画像をノイズ入り動画へ変換
     uint8_t *img = (uint8_t *)image.request().ptr;
     srand((unsigned)time(NULL));
@@ -168,7 +191,8 @@ PYBIND11_MODULE(zoomg, m) {
              pybind11::arg("w"))
         .def("add_image", &Zoomg::add_image)
         .def("generate_image", &Zoomg::generate_image,
-             pybind11::arg("param") = 0.75, pybind11::arg("noise_frame") = 0)
+             pybind11::arg("param") = 0.75, pybind11::arg("noise_frame") = 0,
+             pybind11::arg("comp") = "cos_sim")
         .def("get_image", &Zoomg::get_image)
         .def("get_omgc", &Zoomg::get_omgc)
         .def("verify", &Zoomg::verify)
