@@ -3,6 +3,7 @@ MANIFEST.in
 README.rst
 setup.py
 zoomg.cpp
+test/test.py
 zoomg.egg-info/PKG-INFO
 zoomg.egg-info/SOURCES.txt
 zoomg.egg-info/dependency_links.txt
