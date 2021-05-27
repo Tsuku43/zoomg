@@ -17,7 +17,8 @@ pip install zoomg
 - python 3.6.4
 - pip 20.2.4
 - OS
-  - macOS Catalina 10.15.7
+  - macOS Catalina 10.15.7 (x86_64)
+  - macOS Bug Sur 11.4 (aarch64)
   - Ubuntu 20.04.1 LTS / 18.04.4 LTS
 
 **Windows では動作保証をしていません**
@@ -26,11 +27,11 @@ pip install zoomg
 
 ### 簡単な使用方法
 
-```shell=
+```sh
 python3 sample.py sample_video.mp4
 ```
 
-```python:sample.py
+```python
 import zoomg
 import cv2
 import sys
@@ -111,15 +112,23 @@ zoom.add_image(frame)
 `Zoomg.add_image`で追加した画像から背景画像を復元する.
 
 ```python
-zoom.generate_image(param, noise_frame)
+zoom.generate_image(param, noise_frame, comp)
 ```
 
 - 引数
 
-| パラメータ  | 型    | キーワード引数  | 省略             | 説明                                                                                                                                                 |
-| ----------- | ----- | --------------- | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| param       | float | 可(param)       | 可(default=0.75) | [0.0, 1.0]の値をとる.各ピクセルが部屋の背景かバーチャル背景か判定するためのパラメータ.高くすると復元できるピクセル数が減り,低くすると誤判定が増える. |
-| noise_frame | int   | 可(noise_frame) | 可(default=1)    | 画像にノイズが多く含まれている場合,ノイズを軽減するためのパラメータ                                                                                  |
+| パラメータ  | 型     | キーワード引数  | 省略                    | 説明                                                                                                     |
+| ----------- | ------ | --------------- | ----------------------- | -------------------------------------------------------------------------------------------------------- |
+| param       | float  | 可(param)       | 可(default=5.06)        | 各ピクセルが部屋の背景かバーチャル背景か判定するためのパラメータ．詳細は以下の表「色差について」を参照． |
+| noise_frame | int    | 可(noise_frame) | 可(default=1)           | 画像にノイズが多く含まれている場合,ノイズを軽減するためのパラメータ                                      |
+| comp        | string | 可(noise_frame) | 可(default="ciede2000") | 色差を決定する．詳細は以下の表「色差について」を参照．                                                   |
+
+- 色差について
+
+| 色差計算アルゴリズム | comp        | param 指定可能範囲 | 説明                                                                   |
+| -------------------- | ----------- | ------------------ | ---------------------------------------------------------------------- |
+| コサイン類似度       | `cos_sim`   | [0.0, 1.0]         | 高くすると復元できるピクセル数が**減り**,低くすると誤判定が**増える**. |
+| CIEDE2000            | `ciede2000` | [0.0, 100]         | 高くすると誤判定が**増え**,低くすると復元できるピクセル数が**減る**.   |
 
 - 返り値
   - なし
@@ -280,3 +289,22 @@ zoomg.get_shape(image&, height, width, rate)
 | width      | int | 生成画像の幅   |
 
 ---
+
+## Build / ビルド
+
+- 本ソースコードのコンパイル
+
+```sh
+> pwd
+ほにゃらら/zoomg/zoomg
+
+> clang++ -O3 -Wall -shared -std=c++17 -fPIC `python -m pybind11 --includes` -undefined dynamic_lookup zoomg.cpp ColorSpace/src/Comparison.cpp ColorSpace/src/ColorSpace.cpp ColorSpace/src/Conversion.cpp -o zoomg`python3-config --extension-suffix`
+```
+
+- 実行
+
+```sh
+> cd test
+> pip uninstall zoomg # いらないかも
+> python test.py sample_02.mp4
+```
