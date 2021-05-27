@@ -2,6 +2,7 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
+#include <cassert>
 #include <iostream>
 #include <map>
 #include <tuple>
@@ -13,6 +14,13 @@
 using Pixel = std::vector<uint8_t>;
 using Image = std::vector<std::vector<Pixel>>;
 using Movie = std::vector<Image>;
+
+void my_assert(bool conditions, std::string msg = "something error.") {
+    if (!conditions) {
+        printf("[ERROR] %s\n", msg.c_str());
+    }
+    assert(conditions);
+}
 
 class Zoomg {
    private:
@@ -65,8 +73,28 @@ class Zoomg {
             }
         }
     }
-    void generate_image(const double param, const int noise_frame,
-                        const std::string comp) {
+    void generate_image(const std::string comp, const double param,
+                        const int noise_frame) {
+        // default値の設定
+        if (param == NULL) {
+            if (comp == "ciede2000") {
+                param = 5.06;
+            } else if (comp == "cos_sim") {
+                param = 0.75;
+            }
+        }
+        // validation
+        my_assert((comp == "ciede2000" || comp == "cos_sim"),
+                  "Please set 'ciede2000' or 'cos_sim' for 'camp'");
+        if (comp == "ciede2000") {
+            my_assert((0.0 <= param && param <= 100.0),
+                      "The range of the parameters of 'ciede2000' is "
+                      "between 0.0 and 100.0");
+        } else if (comp == "cos_sim") {
+            my_assert((0.0 <= param && param <= 1.0),
+                      "The range of the parameters of 'cos_sim' is "
+                      "between 0.0 and 1.0");
+        }
         // 画像を生成
         for (int h = 0; h < height; ++h) {
             for (int w = 0; w < width; ++w) {
@@ -92,13 +120,7 @@ class Zoomg {
                 [&]() -> void {
                     // コサイン類似度がparam未満で出現タイミングが最も早い画素を探索
                     for (auto p : most_common) {
-                        if (comp == "cos_sim") {
-                            if (cos_sim(std::get<0>(p), most) < param) {
-                                ++omgc;
-                                image[h][w] = std::get<0>(p);
-                                return;
-                            }
-                        } else if (comp == "ciede2000") {
+                        if (comp == "ciede2000") {
                             Pixel p_bgr = std::get<0>(p);
                             Pixel most_bgr = most;
                             ColorSpace::Rgb p_color(p_bgr[2], p_bgr[1],
@@ -110,6 +132,12 @@ class Zoomg {
                                     &p_color, &most_color);
 
                             if (color_diff > param) {
+                                ++omgc;
+                                image[h][w] = std::get<0>(p);
+                                return;
+                            }
+                        } else if (comp == "cos_sim") {
+                            if (cos_sim(std::get<0>(p), most) < param) {
                                 ++omgc;
                                 image[h][w] = std::get<0>(p);
                                 return;
@@ -189,8 +217,8 @@ PYBIND11_MODULE(zoomg, m) {
              pybind11::arg("w"))
         .def("add_image", &Zoomg::add_image)
         .def("generate_image", &Zoomg::generate_image,
-             pybind11::arg("param") = 5.06, pybind11::arg("noise_frame") = 0,
-             pybind11::arg("comp") = "ciede2000")
+             pybind11::arg("comp") = "ciede2000", pybind11::arg("param") = NULL,
+             pybind11::arg("noise_frame") = 0)
         .def("get_image", &Zoomg::get_image)
         .def("get_omgc", &Zoomg::get_omgc)
         .def("verify", &Zoomg::verify)
