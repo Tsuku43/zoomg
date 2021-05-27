@@ -8,11 +8,11 @@
 
 ## [zoomg](https://github.com/Tsuku43/zoomg/tree/master/zoomg)
 
-zoomg PyPIパッケージ
+zoomg PyPI パッケージ
 
 ## [ALGORITHM.md](https://github.com/Tsuku43/zoomg/blob/master/ALGORITHM.md)
 
-zoomgのアルゴリズムを説明した資料
+zoomg のアルゴリズムを説明した資料
 
 ## [AVTOKYO2020](https://github.com/Tsuku43/zoomg/tree/master/avtokyo)
 
@@ -20,14 +20,13 @@ zoomgのアルゴリズムを説明した資料
 
 ## [Sample](https://github.com/Tsuku43/zoomg/tree/master/sample)
 
-zoomgを利用するサンプルコード
+zoomg を利用するサンプルコード
 
 ## [Resources](https://github.com/Tsuku43/zoomg/tree/master/resources)
 
-zoomgを利用する際に有用なリソース
+zoomg を利用する際に有用なリソース
 
 ## Authors
 
-* **[satoki](https://github.com/satoki)**
-* **[xryuseix](https://github.com/xryuseix)**
-
+- **[satoki](https://github.com/satoki)**
+- **[xryuseix](https://github.com/xryuseix)**

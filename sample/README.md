@@ -2,7 +2,7 @@
 
 ## [main.py](https://github.com/Tsuku43/zoomg/blob/master/sample/main.py)
 
-zoomgを用いた最も簡単なサンプルプログラム
+zoomg を用いた最も簡単なサンプルプログラム
 
 ```python
 import zoomg
