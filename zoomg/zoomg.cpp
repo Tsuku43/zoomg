@@ -73,10 +73,10 @@ class Zoomg {
             }
         }
     }
-    void generate_image(const std::string comp, const double param,
+    void generate_image(const std::string comp, double param,
                         const int noise_frame) {
         // default値の設定
-        if (param == NULL) {
+        if (param == -1) {
             if (comp == "ciede2000") {
                 param = 5.06;
             } else if (comp == "cos_sim") {
@@ -170,18 +170,53 @@ class Zoomg {
         // 生成された画像を取得
         return {height, width};
     }
-    std::tuple<int, int, double> verify(const pybind11::array_t<int> &img_np) {
+    std::tuple<int, int, double> verify(const pybind11::array_t<int> &img_np,
+                                        const std::string comp, double param) {
         // 生成した画像がどれくらい部屋を復元できているか検証
+        // default値の設定
+        if (param == -1) {
+            if (comp == "ciede2000") {
+                param = 5.06;
+            } else if (comp == "cos_sim") {
+                param = 0.99;
+            }
+        }
+        // validation
+        my_assert((comp == "ciede2000" || comp == "cos_sim"),
+                  "Please set 'ciede2000' or 'cos_sim' for 'camp'");
+        if (comp == "ciede2000") {
+            my_assert((0.0 <= param && param <= 100.0),
+                      "The range of the parameters of 'ciede2000' is "
+                      "between 0.0 and 100.0");
+        } else if (comp == "cos_sim") {
+            my_assert((0.0 <= param && param <= 1.0),
+                      "The range of the parameters of 'cos_sim' is "
+                      "between 0.0 and 1.0");
+        }
         const uint8_t *verify_img = (const uint8_t *)img_np.request().ptr;
         int ok = 0, ng = 0;
         for (int h = 0; h < height; ++h) {
             for (int w = 0; w < width; ++w) {
                 const Pixel p = Pixel(verify_img + 3 * (h * width + w),
                                       verify_img + 3 * (h * width + w + 1));
-                if (cos_sim(image[h][w], p) > 0.999) {
-                    ++ok;
-                } else {
-                    ++ng;
+                if (comp == "ciede2000") {
+                    ColorSpace::Rgb p_color(p[2], p[1], p[0]);
+                    ColorSpace::Rgb most_color(image[h][w][2], image[h][w][1],
+                                               image[h][w][0]);
+                    auto color_diff = ColorSpace::Cie2000Comparison::Compare(
+                        &p_color, &most_color);
+
+                    if (color_diff < param) {
+                        ++ok;
+                    } else {
+                        ++ng;
+                    }
+                } else if (comp == "cos_sim") {
+                    if (cos_sim(image[h][w], p) > param) {
+                        ++ok;
+                    } else {
+                        ++ng;
+                    }
                 }
             }
         }
@@ -217,11 +252,12 @@ PYBIND11_MODULE(zoomg, m) {
              pybind11::arg("w"))
         .def("add_image", &Zoomg::add_image)
         .def("generate_image", &Zoomg::generate_image,
-             pybind11::arg("comp") = "ciede2000", pybind11::arg("param") = NULL,
+             pybind11::arg("comp") = "ciede2000", pybind11::arg("param") = -1,
              pybind11::arg("noise_frame") = 0)
         .def("get_image", &Zoomg::get_image)
         .def("get_omgc", &Zoomg::get_omgc)
-        .def("verify", &Zoomg::verify)
+        .def("verify", &Zoomg::verify, pybind11::arg("img_np"),
+             pybind11::arg("comp") = "ciede2000", pybind11::arg("param") = -1)
         .def("get_height", &Zoomg::get_height)
         .def("get_width", &Zoomg::get_width)
         .def("get_shape", &Zoomg::get_shape);

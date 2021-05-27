@@ -15,7 +15,7 @@ width = int(video.get(cv2.CAP_PROP_FRAME_WIDTH))
 count = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
 
 # 時間がかかる場合 画像を圧縮する
-compress = 12 # 画像を1/8に圧縮
+compress = 4 # 画像を1/8に圧縮
 height //= compress
 width //= compress
     
@@ -39,6 +39,7 @@ while True:
 
 # 背景画像を生成
 zoom.generate_image(comp="ciede2000", param=30)
+
 # 背景画像を取得
 image = zoom.get_image()
 
