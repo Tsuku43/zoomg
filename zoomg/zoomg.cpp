@@ -1,17 +1,3 @@
-/*
-# 本ソースコードのコンパイル
-> pwd
-ほにゃらら/zoomg/zoomg
-
-> clang++ -O3 -Wall -shared -std=c++17 -fPIC `python -m pybind11 --includes`
--undefined dynamic_lookup zoomg.cpp -o zoomg`python3-config --extension-suffix`
-
-# 実行
-> cd test
-> pip uninstall zoomg # いらないかも
-> python test.py sample_02.mp4
-*/
-
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
@@ -20,6 +6,9 @@
 #include <map>
 #include <tuple>
 #include <vector>
+
+#include "ColorSpace/src/ColorSpace.h"
+#include "ColorSpace/src/Comparison.h"
 
 using Pixel = std::vector<uint8_t>;
 using Image = std::vector<std::vector<Pixel>>;
@@ -110,11 +99,21 @@ class Zoomg {
                                 return;
                             }
                         } else if (comp == "ciede2000") {
-                            // TODO
-                            printf("FROM CIEDE\n");
-                            ++omgc;
-                            image[h][w] = std::get<0>(p);
-                            return;
+                            Pixel p_bgr = std::get<0>(p);
+                            Pixel most_bgr = most;
+                            ColorSpace::Rgb p_color(p_bgr[2], p_bgr[1],
+                                                    p_bgr[0]);
+                            ColorSpace::Rgb most_color(most_bgr[2], most_bgr[1],
+                                                       most_bgr[0]);
+                            auto color_diff =
+                                ColorSpace::Cie2000Comparison::Compare(
+                                    &p_color, &most_color);
+
+                            if (color_diff > param) {
+                                ++omgc;
+                                image[h][w] = std::get<0>(p);
+                                return;
+                            }
                         }
                     }
                     // 探索しても見つからなかった場合
@@ -169,7 +168,6 @@ const int w := 画像のはば
 const int frame := 生成するフレーム数
 const double rate := 過疎率
 */
-
 void add_noise(const pybind11::array_t<uint8_t> &image, const int h,
                const int w, const double rate) {
     // 画像をノイズ入り動画へ変換
