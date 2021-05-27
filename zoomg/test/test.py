@@ -38,7 +38,7 @@ while True:
     bar.update(1)
 
 # 背景画像を生成
-zoom.generate_image(comp="ciede2000")
+zoom.generate_image(param=30, comp="ciede2000")
 # 背景画像を取得
 image = zoom.get_image()
 
