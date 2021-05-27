@@ -25,4 +25,4 @@ jobs:
           # ソース配布型
           cd zoomg
           python setup.py sdist bdist_wheel
-          twine upload dist/*
+          twine upload --repository testpypi dist/*
