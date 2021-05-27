@@ -189,8 +189,8 @@ PYBIND11_MODULE(zoomg, m) {
              pybind11::arg("w"))
         .def("add_image", &Zoomg::add_image)
         .def("generate_image", &Zoomg::generate_image,
-             pybind11::arg("param") = 0.75, pybind11::arg("noise_frame") = 0,
-             pybind11::arg("comp") = "cos_sim")
+             pybind11::arg("param") = 5.06, pybind11::arg("noise_frame") = 0,
+             pybind11::arg("comp") = "ciede2000")
         .def("get_image", &Zoomg::get_image)
         .def("get_omgc", &Zoomg::get_omgc)
         .def("verify", &Zoomg::verify)
