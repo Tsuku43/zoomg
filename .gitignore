@@ -24,3 +24,8 @@ setting.json
 *.swp
 
 # Custom files
+
+.python-version
+var
+test
+zoomg.egg-info
