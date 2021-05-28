@@ -1,16 +1,10 @@
-[![PyPI version](https://badge.fury.io/py/zoomg.svg)](https://badge.fury.io/py/zoomg) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![PyPI version](https://badge.fury.io/py/zoomg.svg)](https://badge.fury.io/py/zoomg) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![Downloads](https://pepy.tech/badge/zoomg)](https://pepy.tech/project/zoomg)
 
-# zoomg
+# zoomg Docs
 
 バーチャル背景適用済み動画からバーチャル背景を復元するライブラリ
 
 ![icon](https://github.com/Tsuku43/zoomg/blob/master/images/icon.png?raw=true)
-
-## Installing / インストール
-
-```shell=
-pip install zoomg
-```
 
 ## System Requirements / 動作保証環境
 
@@ -20,6 +14,20 @@ pip install zoomg
   - macOS Catalina 10.15.7 (x86_64)
   - macOS Bug Sur 11.4 (aarch64)
   - Ubuntu 20.04.1 LTS / 18.04.4 LTS
+
+## Installing / インストール
+
+* aarch64環境の場合
+
+```shell
+pip install zoomg
+```
+
+* x86_64環境の場合
+
+```shell
+pip install git+https://github.com/Tsuku43/zoomg
+```
 
 **Windows では動作保証をしていません**
 

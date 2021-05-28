@@ -17,7 +17,8 @@
 
 ## [zoomg](https://github.com/Tsuku43/zoomg/tree/master/zoomg)
 
-zoomg PyPI パッケージ
+zoomg PyPI パッケージ  
+**パッケージの仕様は[こちら](./zoomg_docs.md)**
 
 ## [ALGORITHM.md](https://github.com/Tsuku43/zoomg/blob/master/ALGORITHM.md)
 
