@@ -119,7 +119,7 @@ class BuildExt(build_ext):
 setup(
     name="zoomg",
     copyright="Copyright (C) 2020 Ryusei Ishikawa, Satoki Tsuji",
-    version="2.0.4",
+    version="2.0.5",
     license="MIT",
     author="Ryusei Ishikawa, Satoki Tsuji",
     author_email="",
