@@ -25,5 +25,5 @@ jobs:
           # ソース配布型
           cd zoomg
           python setup.py sdist bdist_wheel
-          mv dist/zoomg-2.0.4-cp39-cp39-linux_x86_64.whl dist/zoomg-1.0.9-cp36-cp36m-macosx_10_15_x86_64.whl
+          mv dist/zoomg-2.0.4-cp39-cp39-linux_x86_64.whl dist/zoomg-2.0.4-cp36-cp36m-macosx_10_15_x86_64.whl
           twine upload --repository testpypi dist/*
