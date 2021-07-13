@@ -1,6 +1,8 @@
+<!-- @format -->
+
 [![PyPI version](https://badge.fury.io/py/zoomg.svg)](https://badge.fury.io/py/zoomg) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![Downloads](https://pepy.tech/badge/zoomg)](https://pepy.tech/project/zoomg)
 
-# zoomg Docs
+# zoomg PyPI package
 
 バーチャル背景適用済み動画からバーチャル背景を復元するライブラリ
 
@@ -15,45 +17,37 @@
   - macOS Bug Sur 11.4 (aarch64)
   - Ubuntu 20.04.1 LTS / 18.04.4 LTS
 
-## Installing / インストール
+## Quick Start
 
-* aarch64環境の場合
-
-```shell
-pip install zoomg
-```
-
-* x86_64環境の場合
+zoomg を用いた最も簡単な[サンプルプログラム](./sample)．コマンドライン引数に復元したい動画ファイルのパスを指定します．サンプルの動画ファイルは [resources](./resources) に含まれています．
 
 ```shell
-pip install git+https://github.com/Tsuku43/zoomg
+# 実行コマンド
+pip3 install -U pip
+pip install opencv-python numpy tqdm
+pip3 install zoomg # zoomgのインストールは下記「Installing」参照
+python3 sample.py ../resources/verification.mp4
 ```
 
-**Windows では動作保証をしていません**
-
-## How to use / 使用方法
-
-### 簡単な使用方法
-
-```sh
-python3 sample.py sample_video.mp4
-```
-
-```python
+```py
 import zoomg
 import cv2
 import sys
 import numpy
-
+from tqdm import tqdm
 
 # ビデオ読み込みの初期設定
 filename = sys.argv[1]
 video = cv2.VideoCapture(filename)
 height = int(video.get(cv2.CAP_PROP_FRAME_HEIGHT))
 width = int(video.get(cv2.CAP_PROP_FRAME_WIDTH))
+count = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
 
 # zoomgの初期化
 zoom = zoomg.Zoomg(height, width)
+
+# 進捗バー
+bar = tqdm(total=count)
 
 while True:
     # フレーム読み込み
@@ -62,14 +56,36 @@ while True:
         break
     # zoomgに画像を追加
     zoom.add_image(frame)
+    # 進捗バー更新
+    bar.update(1)
 
 # 背景画像を生成
 zoom.generate_image()
 # 背景画像を取得
 image = zoom.get_image()
+
 # 背景画像を保存
 cv2.imwrite("room.png", numpy.array(image))
+bar.close()
 ```
+
+## Installing
+
+- aarch64 環境の場合
+
+```shell
+pip3 install zoomg
+```
+
+- x86_64 環境の場合
+
+```shell
+pip3 install git+https://github.com/Tsuku43/zoomg
+```
+
+**Windows 環境では動作保証をしていません**
+
+## How to use
 
 ### Zoomg クラス
 
@@ -297,24 +313,3 @@ zoomg.get_shape(image&, height, width, rate)
 | ---------- | --- | -------------- |
 | height     | int | 生成画像の高さ |
 | width      | int | 生成画像の幅   |
-
----
-
-## Build / ビルド
-
-- 本ソースコードのコンパイル
-
-```sh
-> pwd
-ほにゃらら/zoomg/zoomg
-
-> clang++ -O3 -Wall -shared -std=c++17 -fPIC `python -m pybind11 --includes` -undefined dynamic_lookup zoomg.cpp ColorSpace/src/Comparison.cpp ColorSpace/src/ColorSpace.cpp ColorSpace/src/Conversion.cpp -o zoomg`python3-config --extension-suffix`
-```
-
-- 実行
-
-```sh
-> cd test
-> pip uninstall zoomg # いらないかも
-> python test.py sample_02.mp4
-```
