@@ -1,8 +1,14 @@
 # Sample
 
-## [main.py](https://github.com/Tsuku43/zoomg/blob/master/sample/main.py)
-
 zoomg を用いた最も簡単なサンプルプログラム
+
+```shell
+# 実行コマンド
+pip3 install -U pip
+pip install opencv-python numpy tqdm
+pip3 install zoomg # zoomgのインストールは下記「Installing」参照
+python3 sample.py ../resources/verification.mp4
+```
 
 ```python
 import zoomg
